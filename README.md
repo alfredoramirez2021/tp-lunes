@@ -82,5 +82,68 @@ Este archivo contiene la configuración de la interfaz gráfica con Tkinter.
 
 El inventario se muestra automáticamente en la sección de inventario de la interfaz gráfica.
 
+Paso a Paso
+
+db.py
+
+    Conexión a la base de datos y creación de la tabla de productos:
+        crear_base_datos(): Establece una conexión con la base de datos SQLite y crea una tabla de productos si no existe.
+
+    Agregar producto:
+        agregar_producto(nombre, precio, cantidad): Inserta un nuevo producto en la tabla de productos con el nombre, precio y cantidad proporcionados.
+
+    Actualizar cantidad de producto:
+        actualizar_cantidad(producto_id, nueva_cantidad): Actualiza la cantidad de un producto existente basado en su ID.
+
+    Ver inventario:
+        ver_inventario(): Recupera todos los productos de la tabla y los devuelve como una lista de tuplas.
+
+    Vender producto:
+        vender_producto(producto_id, cantidad_vendida, dinero_entregado):
+            Recupera la cantidad y el precio del producto basado en su ID.
+            Calcula el valor total de la venta y el cambio basado en el dinero entregado.
+            Actualiza la cantidad del producto en la tabla y devuelve el detalle de la venta.
+
+functions.py
+
+    Agregar producto desde la GUI:
+        agregar_producto_gui(entry_nombre, entry_precio, entry_cantidad, text_inventario):
+            Obtiene los valores de entrada de los campos de la GUI.
+            Llama a agregar_producto() para agregar el producto a la base de datos.
+            Actualiza la vista del inventario en la GUI.
+
+    Actualizar cantidad de producto desde la GUI:
+        actualizar_cantidad_gui(entry_id_actualizar, entry_nueva_cantidad, text_inventario):
+            Obtiene los valores de entrada de los campos de la GUI.
+            Llama a actualizar_cantidad() para actualizar la cantidad del producto en la base de datos.
+            Actualiza la vista del inventario en la GUI.
+
+    Vender producto desde la GUI:
+        vender_producto_gui(entry_id_vender, entry_cantidad_vender, entry_dinero_entregado, text_inventario):
+            Obtiene los valores de entrada de los campos de la GUI.
+            Llama a vender_producto() para realizar la venta.
+            Muestra el detalle de la venta y actualiza la vista del inventario en la GUI.
+
+    Actualizar la vista del inventario en la GUI:
+        actualizar_inventario(text_inventario):
+            Recupera todos los productos de la base de datos.
+            Limpia y actualiza el campo de texto de la GUI con los productos actuales.
+
+main.py
+
+    Crear la base de datos:
+        Llama a crear_base_datos() para asegurarse de que la base de datos y la tabla de productos existen.
+
+    Crear la interfaz gráfica:
+        Configura y muestra la interfaz gráfica utilizando Tkinter.
+        Proporciona campos de entrada y botones para agregar productos, actualizar cantidades y vender productos.
+        Muestra el inventario en un campo de texto.
+
+Ejecución del programa
+
+    El usuario interactúa con la interfaz gráfica para agregar productos, actualizar cantidades y vender productos.
+    Las acciones del usuario en la GUI llaman a las funciones de functions.py, que a su vez interactúan con db.py para realizar operaciones en la base de datos.
+    La vista del inventario se actualiza automáticamente en la GUI para reflejar los cambios realizados en la base de datos.
+
 
 
