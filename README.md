@@ -14,8 +14,7 @@ El proyecto está dividido en tres archivos principales:
 
 1. **Clona el repositorio**:
     ```bash
-    git clone https://github.com/tu_usuario/sistema_ventas_inventario.git
-    cd sistema_ventas_inventario
+    
     ```
 
 2. **Asegúrate de tener Python instalado**. Puedes descargarlo desde [python.org](https://www.python.org/).
