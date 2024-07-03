@@ -14,7 +14,7 @@ El proyecto está dividido en tres archivos principales:
 
 1. **Clona el repositorio**:
     ```bash
-    
+    https://github.com/alfredoramirez2021/tp-lunes/tree/main
     ```
 
 2. **Asegúrate de tener Python instalado**. Puedes descargarlo desde [python.org](https://www.python.org/).
