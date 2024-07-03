@@ -1,253 +1,87 @@
-Sistema de Gestión de Comercio con Python y Tkinter
-Descripción
+# Sistema de Ventas e Inventario
 
-Este proyecto es un sistema de gestión de comercio que permite registrar productos, compras y ventas, y mantiene un inventario actualizado utilizando una interfaz gráfica de usuario construida con tkinter. La aplicación también realiza cálculos de pérdidas y ganancias basadas en la información registrada.
-Estructura del Proyecto
+Este proyecto es un sistema de ventas e inventario básico que permite agregar productos, actualizar cantidades, vender productos y ver el inventario utilizando una interfaz gráfica creada con Tkinter y una base de datos SQLite.
+
+## Estructura del Proyecto
 
 El proyecto está dividido en tres archivos principales:
 
-    main.py: Archivo principal para iniciar la aplicación.
-    ui.py: Maneja la interfaz gráfica de usuario.
-    database.py: Maneja las operaciones de la base de datos con SQLite.
+1. `db.py` - Gestión de la base de datos.
+2. `functions.py` - Funciones de lógica de negocio.
+3. `main.py` - Interfaz gráfica con Tkinter.
 
-Instalación
+## Instalación
 
-Asegúrate de tener Python instalado en tu sistema. Puedes descargarlo desde python.org.
+1. **Clona el repositorio**:
+    ```bash
+    git clone https://github.com/tu_usuario/sistema_ventas_inventario.git
+    cd sistema_ventas_inventario
+    ```
 
-    Clona este repositorio o descarga los archivos.
-    Navega al directorio del proyecto en tu terminal.
+2. **Asegúrate de tener Python instalado**. Puedes descargarlo desde [python.org](https://www.python.org/).
 
-Ejecución
+## Ejecución del Proyecto
 
-Para iniciar la aplicación, ejecuta el siguiente comando en tu terminal:
+1. **Ejecuta el archivo principal**:
+    ```bash
+    python main.py
+    ```
 
-python main.py
+Esto abrirá la interfaz gráfica de Tkinter.
 
-Archivos
-main.py
+## Descripción de los Archivos
 
-Archivo principal que inicia la aplicación.
+### `db.py`
 
-from ui import create_main_window
+Este archivo se encarga de gestionar la conexión a la base de datos y las operaciones CRUD (Crear, Leer, Actualizar, Borrar).
 
-if __name__ == "__main__":
-    create_main_window()
+- `crear_base_datos()`: Crea la base de datos y la tabla de productos si no existen.
+- `agregar_producto(nombre, precio, cantidad)`: Agrega un producto a la base de datos.
+- `actualizar_cantidad(producto_id, nueva_cantidad)`: Actualiza la cantidad de un producto existente.
+- `ver_inventario()`: Devuelve una lista con todos los productos en el inventario.
+- `vender_producto(producto_id, cantidad_vendida, dinero_entregado)`: Realiza la venta de un producto, actualiza la cantidad en la base de datos y calcula el cambio.
 
-database.py
+### `functions.py`
 
-Maneja todas las operaciones relacionadas con la base de datos utilizando SQLite.
+Este archivo contiene las funciones que interactúan con `db.py` y son utilizadas por la interfaz gráfica.
 
-import sqlite3
+- `agregar_producto_gui(entry_nombre, entry_precio, entry_cantidad, text_inventario)`: Obtiene los valores de entrada, agrega un producto a la base de datos y actualiza la vista del inventario.
+- `actualizar_cantidad_gui(entry_id_actualizar, entry_nueva_cantidad, text_inventario)`: Obtiene los valores de entrada, actualiza la cantidad de un producto y actualiza la vista del inventario.
+- `vender_producto_gui(entry_id_vender, entry_cantidad_vender, entry_dinero_entregado, text_inventario)`: Obtiene los valores de entrada, realiza la venta de un producto, muestra el detalle de la venta y actualiza la vista del inventario.
+- `actualizar_inventario(text_inventario)`: Actualiza la vista del inventario con los datos actuales de la base de datos.
 
-class Database:
-    def __init__(self):
-        self.conn = sqlite3.connect('comercio.db')
-        self.create_tables()
+### `main.py`
 
-    def create_tables(self):
-        cursor = self.conn.cursor()
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS Productos (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nombre TEXT NOT NULL,
-                precio_compra REAL NOT NULL,
-                precio_venta REAL NOT NULL,
-                stock INTEGER NOT NULL
-            )
-        ''')
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS Compras (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                producto_id INTEGER,
-                cantidad INTEGER NOT NULL,
-                fecha DATE NOT NULL,
-                FOREIGN KEY (producto_id) REFERENCES Productos (id)
-            )
-        ''')
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS Ventas (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                producto_id INTEGER,
-                cantidad INTEGER NOT NULL,
-                fecha DATE NOT NULL,
-                FOREIGN KEY (producto_id) REFERENCES Productos (id)
-            )
-        ''')
-        self.conn.commit()
+Este archivo contiene la configuración de la interfaz gráfica con Tkinter.
 
-    def add_product(self, nombre, precio_compra, precio_venta, stock):
-        cursor = self.conn.cursor()
-        cursor.execute('''
-            INSERT INTO Productos (nombre, precio_compra, precio_venta, stock)
-            VALUES (?, ?, ?, ?)
-        ''', (nombre, precio_compra, precio_venta, stock))
-        self.conn.commit()
+- **Crear la base de datos**: Llama a `crear_base_datos()` para asegurarse de que la base de datos y la tabla de productos existen.
+- **Crear la interfaz gráfica**: Configura y muestra la interfaz gráfica utilizando Tkinter.
 
-    def add_compra(self, producto_id, cantidad):
-        cursor = self.conn.cursor()
-        cursor.execute('''
-            INSERT INTO Compras (producto_id, cantidad, fecha)
-            VALUES (?, ?, DATE('now'))
-        ''', (producto_id, cantidad))
-        cursor.execute('''
-            UPDATE Productos
-            SET stock = stock + ?
-            WHERE id = ?
-        ''', (cantidad, producto_id))
-        self.conn.commit()
+## Funcionalidades
 
-    def add_venta(self, producto_id, cantidad):
-        cursor = self.conn.cursor()
-        cursor.execute('''
-            INSERT INTO Ventas (producto_id, cantidad, fecha)
-            VALUES (?, ?, DATE('now'))
-        ''', (producto_id, cantidad))
-        cursor.execute('''
-            UPDATE Productos
-            SET stock = stock - ?
-            WHERE id = ?
-        ''', (cantidad, producto_id))
-        self.conn.commit()
+### Agregar Productos
 
-    def get_stock(self):
-        cursor = self.conn.cursor()
-        cursor.execute('''
-            SELECT nombre, stock
-            FROM Productos
-        ''')
-        return cursor.fetchall()
+1. Ingresar el nombre del producto.
+2. Ingresar el precio del producto.
+3. Ingresar la cantidad del producto.
+4. Hacer clic en "Agregar producto".
 
-ui.py
+### Actualizar Cantidad de Productos
 
-Maneja la interfaz gráfica de usuario utilizando tkinter.
+1. Ingresar el ID del producto a actualizar.
+2. Ingresar la nueva cantidad del producto.
+3. Hacer clic en "Actualizar cantidad".
 
-import tkinter as tk
-from tkinter import messagebox
-from database import Database
+### Vender Productos
 
-class App:
-    def __init__(self, root):
-        self.db = Database()
-        self.root = root
-        self.root.title("Gestión de Comercio")
-        self.root.geometry("600x400")
+1. Ingresar el ID del producto a vender.
+2. Ingresar la cantidad a vender.
+3. Ingresar el dinero entregado.
+4. Hacer clic en "Vender producto".
 
-        # Crear componentes
-        self.create_widgets()
+### Ver Inventario
 
-    def create_widgets(self):
-        # Etiquetas y entradas para agregar productos
-        self.label_nombre = tk.Label(self.root, text="Nombre del Producto")
-        self.label_nombre.pack()
-        self.entry_nombre = tk.Entry(self.root)
-        self.entry_nombre.pack()
+El inventario se muestra automáticamente en la sección de inventario de la interfaz gráfica.
 
-        self.label_precio_compra = tk.Label(self.root, text="Precio de Compra")
-        self.label_precio_compra.pack()
-        self.entry_precio_compra = tk.Entry(self.root)
-        self.entry_precio_compra.pack()
 
-        self.label_precio_venta = tk.Label(self.root, text="Precio de Venta")
-        self.label_precio_venta.pack()
-        self.entry_precio_venta = tk.Entry(self.root)
-        self.entry_precio_venta.pack()
-
-        self.label_stock = tk.Label(self.root, text="Stock Inicial")
-        self.label_stock.pack()
-        self.entry_stock = tk.Entry(self.root)
-        self.entry_stock.pack()
-
-        self.btn_add_product = tk.Button(self.root, text="Agregar Producto", command=self.add_product)
-        self.btn_add_product.pack(pady=10)
-
-        # Etiquetas y entradas para registrar compras
-        self.label_producto_compra = tk.Label(self.root, text="Producto (ID) para Comprar")
-        self.label_producto_compra.pack()
-        self.entry_producto_compra = tk.Entry(self.root)
-        self.entry_producto_compra.pack()
-
-        self.label_cantidad_compra = tk.Label(self.root, text="Cantidad de Compra")
-        self.label_cantidad_compra.pack()
-        self.entry_cantidad_compra = tk.Entry(self.root)
-        self.entry_cantidad_compra.pack()
-
-        self.btn_add_compra = tk.Button(self.root, text="Registrar Compra", command=self.add_compra)
-        self.btn_add_compra.pack(pady=10)
-
-        # Etiquetas y entradas para registrar ventas
-        self.label_producto_venta = tk.Label(self.root, text="Producto (ID) para Vender")
-        self.label_producto_venta.pack()
-        self.entry_producto_venta = tk.Entry(self.root)
-        self.entry_producto_venta.pack()
-
-        self.label_cantidad_venta = tk.Label(self.root, text="Cantidad de Venta")
-        self.label_cantidad_venta.pack()
-        self.entry_cantidad_venta = tk.Entry(self.root)
-        self.entry_cantidad_venta.pack()
-
-        self.btn_add_venta = tk.Button(self.root, text="Registrar Venta", command=self.add_venta)
-        self.btn_add_venta.pack(pady=10)
-
-        # Botón para mostrar el stock
-        self.btn_show_stock = tk.Button(self.root, text="Mostrar Stock", command=self.show_stock)
-        self.btn_show_stock.pack(pady=10)
-
-    def add_product(self):
-        nombre = self.entry_nombre.get()
-        precio_compra = float(self.entry_precio_compra.get())
-        precio_venta = float(self.entry_precio_venta.get())
-        stock = int(self.entry_stock.get())
-
-        self.db.add_product(nombre, precio_compra, precio_venta, stock)
-        messagebox.showinfo("Info", "Producto agregado con éxito")
-
-    def add_compra(self):
-        producto_id = int(self.entry_producto_compra.get())
-        cantidad = int(self.entry_cantidad_compra.get())
-
-        self.db.add_compra(producto_id, cantidad)
-        messagebox.showinfo("Info", "Compra registrada con éxito")
-
-    def add_venta(self):
-        producto_id = int(self.entry_producto_venta.get())
-        cantidad = int(self.entry_cantidad_venta.get())
-
-        self.db.add_venta(producto_id, cantidad)
-        messagebox.showinfo("Info", "Venta registrada con éxito")
-
-    def show_stock(self):
-        stock_data = self.db.get_stock()
-        stock_message = "\n".join([f"Producto: {d[0]}, Stock: {d[1]}" for d in stock_data])
-        messagebox.showinfo("Stock", stock_message)
-
-def create_main_window():
-    root = tk.Tk()
-    app = App(root)
-    root.mainloop()
-
-Agregar Producto
-
-    Ingresa el nombre, precio de compra, precio de venta y stock inicial del producto en los campos correspondientes.
-    Haz clic en "Agregar Producto" para guardar el producto en la base de datos.
-
-Registrar Compra
-
-    Ingresa el ID del producto y la cantidad de compra en los campos correspondientes.
-    Haz clic en "Registrar Compra" para registrar la compra y actualizar el stock.
-
-Registrar Venta
-
-    Ingresa el ID del producto y la cantidad de venta en los campos correspondientes.
-    Haz clic en "Registrar Venta" para registrar la venta y actualizar el stock.
-
-Mostrar Stock
-
-    Haz clic en "Mostrar Stock" para ver el stock actual de todos los productos.
-
-Contribución
-
-Las contribuciones son bienvenidas. Si deseas mejorar este proyecto, por favor, envía un pull request.
-Licencia
-
-Este proyecto está bajo la Licencia MIT.
 
